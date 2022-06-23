@@ -54,8 +54,8 @@ def download_image(url, folder):
 
 def createParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('start_id', type=int, default=1)
-    parser.add_argument('end_id', type=int, default=11)
+    parser.add_argument('--start_id', type=int, default=1)
+    parser.add_argument('--end_id', type=int, default=11)
     return parser
 
 
