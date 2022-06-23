@@ -14,20 +14,7 @@ IMG_FOLDER_NAME = 'images'
 
 
 def download_txt(url, payload, filename, folder):
-    """Функция для скачивания текстовых файлов.
-
-    Args:
-        url (str): Cсылка на текст, который хочется скачать.
-        payload (dict): Параметры запроса.
-        filename (str): Имя файла, с которым сохранять.
-        folder (str): Папка, куда сохранять.
-
-    Raises:
-        requests.exceptions.HTTPError: Ошибка HTTP.
-
-    Returns:
-        str: Путь до файла, куда сохранён текст.
-    """
+    """Функция для скачивания текстовых файлов"""
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     response = requests.get(url, payload)
@@ -63,7 +50,7 @@ def main():
     parser = createParser()
     parser_params = parser.parse_args(sys.argv[1:])
 
-    for book_id in range(parser_params.start_id, parser_params.end_id):
+    for book_id in range(parser_params.start_id, parser_params.end_id+1):
         payload = {
             'id': book_id,
         }
