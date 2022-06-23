@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -50,9 +52,18 @@ def download_image(url, folder):
         file.write(response.content)
 
 
-def main():
+def createParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('start_id', type=int, default=1)
+    parser.add_argument('end_id', type=int, default=11)
+    return parser
 
-    for book_id in range(1, 11):
+
+def main():
+    parser = createParser()
+    parser_params = parser.parse_args(sys.argv[1:])
+
+    for book_id in range(parser_params.start_id, parser_params.end_id):
         payload = {
             'id': book_id,
         }
@@ -81,4 +92,5 @@ def main():
             print(http_err)
 
 
-main()
+if __name__ == '__main__':
+    main()
