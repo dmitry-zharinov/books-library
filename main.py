@@ -1,14 +1,14 @@
 import os
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urlsplit
 
 import requests
-from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
+
+from tululu_parser import parse_book_page
 
 FOLDER_NAME = 'books'
 IMG_FOLDER_NAME = 'images'
-HOST_NAME = 'https://tululu.org'
 
 
 def download_txt(url, payload, filename, folder):
@@ -40,23 +40,6 @@ def download_txt(url, payload, filename, folder):
     return fpath
 
 
-def extract_comments(soup):
-    comments = []
-    comments_serialized = soup.find_all('div', class_='texts')
-    for comment in comments_serialized:
-        comments.append(comment.find('span', class_='black').text)
-    return comments
-
-def extract_genres(soup):
-    genres = []
-    genres_serialized = soup.find('span', class_='d_book').find_all('a')
-    for genre in genres_serialized:
-        genres.append(genre.text)
-    return genres
-
-
-    
-    
 def get_book_metadata(url):
     """Функция для извлечения данных о книге.
 
@@ -73,20 +56,7 @@ def get_book_metadata(url):
     response.raise_for_status()
     if not response.ok or response.history:
         raise requests.exceptions.HTTPError('Книга не найдена')
-
-    soup = BeautifulSoup(response.text, 'lxml')
-
-    book_name = soup.find('td', class_='ow_px_td').find('h1').text.split('::')
-    img_url = soup.find('div', class_='bookimage').find('img')['src']
-
-    book_info = {
-        'title': book_name[0].strip(),
-        'author': book_name[1].strip(),
-        'img': urljoin(HOST_NAME, img_url),
-        'comments': extract_comments(soup),
-        'genres': extract_genres(soup)
-    }
-    return book_info
+    return parse_book_page(response.text)
 
 
 def download_image(url, folder):
@@ -105,18 +75,27 @@ def main():
         payload = {
             'id': book_id,
         }
-        url = 'https://tululu.org/txt.php'
         try:
-            book_data = get_book_metadata(
-                f'https://tululu.org/b{book_id}/')
-            print(book_data)
-            '''
-            download_txt(url,
-                         payload,
-                         f'{book_id}. {book_data["title"]}',
-                         FOLDER_NAME)
-            '''
-            # download_image(book_data['img'], IMG_FOLDER_NAME)
+            response = requests.get(f'https://tululu.org/b{book_id}/')
+            response.raise_for_status()
+            if not response.ok or response.history:
+                raise requests.exceptions.HTTPError(
+                    f'Книга {book_id} не найдена')
+            book_metadata = parse_book_page(response.text)
+
+            download_txt(
+                'https://tululu.org/txt.php',
+                payload,
+                f'{book_id}. {book_metadata["title"]}',
+                FOLDER_NAME
+            )
+            download_image(
+                book_metadata['img'],
+                IMG_FOLDER_NAME
+            )
+            print(f'Заголовок: {book_metadata["title"]}')
+            print(book_metadata["genres"])
+
         except requests.exceptions.HTTPError as http_err:
             print(http_err)
 
