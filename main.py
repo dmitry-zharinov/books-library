@@ -40,25 +40,6 @@ def download_txt(url, payload, filename, folder):
     return fpath
 
 
-def get_book_metadata(url):
-    """Функция для извлечения данных о книге.
-
-    Args:
-        url (str): Cсылка на книгу на сайте tululu.org.
-
-    Raises:
-        requests.exceptions.HTTPError: Ошибка HTTP.
-
-    Returns:
-        dict: Словарь с данными о книге.
-    """
-    response = requests.get(url)
-    response.raise_for_status()
-    if not response.ok or response.history:
-        raise requests.exceptions.HTTPError('Книга не найдена')
-    return parse_book_page(response.text)
-
-
 def download_image(url, folder):
     """Функция для скачивания обложек"""
     Path(folder).mkdir(parents=True, exist_ok=True)
