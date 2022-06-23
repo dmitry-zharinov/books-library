@@ -47,7 +47,16 @@ def extract_comments(soup):
         comments.append(comment.find('span', class_='black').text)
     return comments
 
+def extract_genres(soup):
+    genres = []
+    genres_serialized = soup.find('span', class_='d_book').find_all('a')
+    for genre in genres_serialized:
+        genres.append(genre.text)
+    return genres
 
+
+    
+    
 def get_book_metadata(url):
     """Функция для извлечения данных о книге.
 
@@ -75,6 +84,7 @@ def get_book_metadata(url):
         'author': book_name[1].strip(),
         'img': urljoin(HOST_NAME, img_url),
         'comments': extract_comments(soup),
+        'genres': extract_genres(soup)
     }
     return book_info
 
