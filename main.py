@@ -1,6 +1,5 @@
 import argparse
 import os
-import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -48,7 +47,7 @@ def createParser():
 
 def main():
     parser = createParser()
-    parser_params = parser.parse_args(sys.argv[1:])
+    parser_params = parser.parse_args()
 
     for book_id in range(parser_params.start_id, parser_params.end_id+1):
         payload = {
