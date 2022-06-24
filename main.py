@@ -12,20 +12,24 @@ FOLDER_NAME = 'books'
 IMG_FOLDER_NAME = 'images'
 
 
+def check_for_redirect(response):
+    if not response.ok or response.history:
+        raise requests.exceptions.HTTPError('Книга не найдена')
+
+
 def download_txt(url, payload, filename, folder):
     """Функция для скачивания текстовых файлов"""
     Path(folder).mkdir(parents=True, exist_ok=True)
 
     response = requests.get(url, payload)
     response.raise_for_status()
-    if not response.ok or response.history:
-        raise requests.exceptions.HTTPError('Книга не найдена')
+    check_for_redirect(response)
 
-    fpath = os.path.join(folder, f'{sanitize_filename(filename)}.txt')
-    with open(fpath, 'wb') as file:
+    filepath = os.path.join(folder, f'{sanitize_filename(filename)}.txt')
+    with open(filepath, 'wb') as file:
         file.write(response.content)
 
-    return fpath
+    return filepath
 
 
 def download_image(url, folder):
@@ -56,9 +60,7 @@ def main():
         try:
             response = requests.get(f'https://tululu.org/b{book_id}/')
             response.raise_for_status()
-            if not response.ok or response.history:
-                raise requests.exceptions.HTTPError(
-                    f'Книга {book_id} не найдена')
+            check_for_redirect(response)
             book_metadata = parse_book_page(response.text)
 
             download_txt(

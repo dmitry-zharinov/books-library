@@ -6,18 +6,15 @@ HOST_NAME = 'https://tululu.org'
 
 
 def extract_comments(soup):
-    comments = []
     comments_serialized = soup.find_all('div', class_='texts')
-    for comment in comments_serialized:
-        comments.append(comment.find('span', class_='black').text)
+    comments = [comment.find('span', class_='black').text
+                for comment in comments_serialized]
     return comments
 
 
 def extract_genres(soup):
-    genres = []
     genres_serialized = soup.find('span', class_='d_book').find_all('a')
-    for genre in genres_serialized:
-        genres.append(genre.text)
+    genres = [genre.text for genre in genres_serialized]
     return genres
 
 
