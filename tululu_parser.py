@@ -1,5 +1,4 @@
 from urllib.parse import urljoin
-
 from bs4 import BeautifulSoup
 
 HOST_NAME = 'https://tululu.org'
@@ -20,14 +19,17 @@ def extract_genres(soup):
 
 def parse_book_page(html_content):
     soup = BeautifulSoup(html_content, 'lxml')
-
     book_name = soup.find('td', class_='ow_px_td').find('h1').text.split('::')
     img_url = soup.find('div', class_='bookimage').find('img')['src']
+
+    title, author = book_name
+
     book_info = {
-        'title': book_name[0].strip(),
-        'author': book_name[1].strip(),
+        'title': title.strip(),
+        'author': author.strip(),
         'img': urljoin(HOST_NAME, img_url),
         'comments': extract_comments(soup),
         'genres': extract_genres(soup)
     }
+
     return book_info

@@ -26,8 +26,8 @@ def download_txt(url, payload, filename, folder):
     check_for_redirect(response)
 
     filepath = os.path.join(folder, f'{sanitize_filename(filename)}.txt')
-    with open(filepath, 'wb') as file:
-        file.write(response.content)
+    with open(filepath, 'w') as file:
+        file.write(response.text)
 
     return filepath
 
@@ -38,6 +38,7 @@ def download_image(url, folder):
     filename = urlsplit(url).path.split('/')[-1]
     response = requests.get(url)
     response.raise_for_status()
+
     with open(Path(folder) / filename, 'wb') as file:
         file.write(response.content)
 
