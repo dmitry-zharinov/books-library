@@ -13,7 +13,7 @@ IMG_FOLDER_NAME = 'images'
 
 
 def check_for_redirect(response):
-    if not response.ok or response.history:
+    if not response.history:
         raise requests.exceptions.HTTPError('Книга не найдена')
 
 
