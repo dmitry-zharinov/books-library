@@ -13,7 +13,7 @@ IMG_FOLDER_NAME = 'images'
 
 
 def check_for_redirect(response):
-    if not response.history:
+    if response.history:
         raise requests.exceptions.HTTPError('Книга не найдена')
 
 
@@ -59,10 +59,11 @@ def main():
             'id': book_id,
         }
         try:
-            response = requests.get(f'https://tululu.org/b{book_id}/')
+            book_url = f'https://tululu.org/b{book_id}/'
+            response = requests.get(book_url)
             response.raise_for_status()
             check_for_redirect(response)
-            book_metadata = parse_book_page(response.text)
+            book_metadata = parse_book_page(response.text, book_url)
 
             download_txt(
                 'https://tululu.org/txt.php',
