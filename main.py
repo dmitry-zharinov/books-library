@@ -1,5 +1,6 @@
 import argparse
 import os
+import time
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -80,6 +81,9 @@ def main():
 
         except requests.exceptions.HTTPError as http_err:
             print(http_err)
+        except requests.ConnectionError as e:
+            print(e)
+            time.sleep(10)
 
 
 if __name__ == '__main__':
