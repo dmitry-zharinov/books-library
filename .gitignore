@@ -154,3 +154,4 @@ cython_debug/
 books
 images
 .vscode/settings.json
+books.json

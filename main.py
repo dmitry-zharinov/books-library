@@ -1,47 +1,6 @@
 import argparse
-import os
-import time
-from pathlib import Path
-from urllib.parse import urlsplit
 
-import requests
-from pathvalidate import sanitize_filename
-
-from tululu_parser import parse_book_page
-
-FOLDER_NAME = 'books'
-IMG_FOLDER_NAME = 'images'
-
-
-def check_for_redirect(response):
-    if response.history:
-        raise requests.exceptions.HTTPError('Книга не найдена')
-
-
-def download_txt(url, payload, filename, folder):
-    """Функция для скачивания текстовых файлов"""
-    Path(folder).mkdir(parents=True, exist_ok=True)
-
-    response = requests.get(url, payload)
-    response.raise_for_status()
-    check_for_redirect(response)
-
-    filepath = os.path.join(folder, f'{sanitize_filename(filename)}.txt')
-    with open(filepath, 'w') as file:
-        file.write(response.text)
-
-    return filepath
-
-
-def download_image(url, folder):
-    """Функция для скачивания обложек"""
-    Path(folder).mkdir(parents=True, exist_ok=True)
-    filename = urlsplit(url).path.split('/')[-1]
-    response = requests.get(url)
-    response.raise_for_status()
-
-    with open(Path(folder) / filename, 'wb') as file:
-        file.write(response.content)
+from tululu_parser import download_book_with_image
 
 
 def createParser():
@@ -56,34 +15,10 @@ def main():
     parser_params = parser.parse_args()
 
     for book_id in range(parser_params.start_id, parser_params.end_id+1):
-        payload = {
-            'id': book_id,
-        }
-        try:
-            book_url = f'https://tululu.org/b{book_id}/'
-            response = requests.get(book_url)
-            response.raise_for_status()
-            check_for_redirect(response)
-            book_metadata = parse_book_page(response.text, book_url)
-
-            download_txt(
-                'https://tululu.org/txt.php',
-                payload,
-                f'{book_id}. {book_metadata["title"]}',
-                FOLDER_NAME
-            )
-            download_image(
-                book_metadata['img'],
-                IMG_FOLDER_NAME
-            )
-            print(f'Заголовок: {book_metadata["title"]}')
-            print(book_metadata["genres"])
-
-        except requests.exceptions.HTTPError as http_err:
-            print(http_err)
-        except requests.ConnectionError as e:
-            print(e)
-            time.sleep(10)
+        book_data = download_book_with_image(book_id)
+        if book_data:
+            print(f'Заголовок: {book_data["title"]}')
+            print(book_data["genres"])
 
 
 if __name__ == '__main__':
