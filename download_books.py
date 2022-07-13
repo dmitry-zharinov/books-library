@@ -1,18 +1,19 @@
 import logging
 import os
 import time
+from parser import parse_book_page
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urlsplit
 
 import requests
-from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 
 logger = logging.getLogger(__file__)
 
+
 HOST_NAME = 'https://tululu.org'
-FOLDER_NAME = 'books'
-IMG_FOLDER_NAME = 'images'
+BOOKS_FOLDER = 'books'
+IMG_FOLDER = 'images'
 
 
 def check_for_redirect(response: requests.Response):
@@ -46,38 +47,6 @@ def download_image(url: str, folder: str):
         file.write(response.content)
 
 
-def extract_comments(soup: BeautifulSoup):
-    comments_selector = 'div.texts span.black'
-    return [comment.text for comment in soup.select(comments_selector)]
-
-
-def extract_genres(soup: BeautifulSoup):
-    genres_selector = 'span.d_book a'
-    return [genre.text for genre in soup.select(genres_selector)]
-
-
-def parse_book_page(html_content: str, book_url: str):
-    soup = BeautifulSoup(html_content, 'lxml')
-
-    book_name_selector = 'td.ow_px_td h1'
-    book_name = soup.select_one(book_name_selector).text.split('::')
-
-    img_selector = 'div.bookimage img'
-    img_src = soup.select_one(img_selector)['src']
-
-    title, author = book_name
-    title = title.strip()
-    book_info = {
-        'title': title,
-        'author': author.strip(),
-        'img_src': urljoin(book_url, str(img_src)),
-        'book_path': f'{FOLDER_NAME}/{title}.txt',
-        'comments': extract_comments(soup),
-        'genres': extract_genres(soup)
-    }
-    return book_info
-
-
 def download_book_with_image(book_id: str, skip_imgs: bool, skip_txt: bool):
     """Скачать книгу с обложкой"""
     payload = {
@@ -88,19 +57,19 @@ def download_book_with_image(book_id: str, skip_imgs: bool, skip_txt: bool):
         response = requests.get(book_url)
         response.raise_for_status()
         check_for_redirect(response)
-        book_metadata = parse_book_page(response.text, book_url)
+        book_metadata = parse_book_page(response.text, book_url, BOOKS_FOLDER)
 
         if not skip_txt:
             download_txt(
                 'https://tululu.org/txt.php',
                 payload,
                 f'{book_id}. {book_metadata["title"]}',
-                FOLDER_NAME)
+                BOOKS_FOLDER)
 
         if not skip_imgs:
             download_image(
                     book_metadata['img_src'],
-                    IMG_FOLDER_NAME)
+                    IMG_FOLDER)
 
         return book_metadata
 

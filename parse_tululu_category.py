@@ -5,7 +5,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 
-from tululu_parser import download_book_with_image
+from download_books import download_book_with_image
 
 logger = logging.getLogger(__file__)
 
@@ -16,8 +16,8 @@ def createParser():
     parser.add_argument('--start_page', type=int, default=1)
     parser.add_argument('--end_page', type=int, default=2)
     parser.add_argument('--dest_folder', default='')
-    parser.add_argument('--skip_imgs', action='store_true', default=False)
-    parser.add_argument('--skip_txt', action='store_true', default=False)
+    parser.add_argument('--skip_imgs', action='store_true')
+    parser.add_argument('--skip_txt', action='store_true')
     parser.add_argument('--json_path', default='')
 
     return parser

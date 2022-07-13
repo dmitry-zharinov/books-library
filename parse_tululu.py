@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from tululu_parser import download_book_with_image
+from download_books import download_book_with_image
 
 
 logger = logging.getLogger(__file__)
