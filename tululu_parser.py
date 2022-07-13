@@ -47,29 +47,30 @@ def download_image(url, folder):
 
 
 def extract_comments(soup):
-    comments_serialized = soup.find_all('div', class_='texts')
-    comments = [comment.find('span', class_='black').text
-                for comment in comments_serialized]
-    return comments
+    comments_selector = 'div.texts span.black'
+    return [comment.text for comment in soup.select(comments_selector)]
 
 
 def extract_genres(soup):
-    genres_serialized = soup.find('span', class_='d_book').find_all('a')
-    genres = [genre.text for genre in genres_serialized]
-    return genres
+    genres_selector = 'span.d_book a'
+    return [genre.text for genre in soup.select(genres_selector)]
 
 
 def parse_book_page(html_content, book_url):
     soup = BeautifulSoup(html_content, 'lxml')
-    book_name = soup.find('td', class_='ow_px_td').find('h1').text.split('::')
-    img_src = soup.find('div', class_='bookimage').find('img')['src']
+
+    book_name_selector = 'td.ow_px_td h1'
+    book_name = soup.select_one(book_name_selector).text.split('::')
+
+    img_selector = 'div.bookimage img'
+    img_src = soup.select_one(img_selector)['src']
 
     title, author = book_name
     title = title.strip()
     book_info = {
         'title': title,
         'author': author.strip(),
-        'img_src': urljoin(book_url, img_src),
+        'img_src': urljoin(book_url, str(img_src)),
         'book_path': f'{FOLDER_NAME}/{title}.txt',
         'comments': extract_comments(soup),
         'genres': extract_genres(soup)

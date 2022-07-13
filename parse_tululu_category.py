@@ -12,18 +12,16 @@ logger = logging.getLogger(__file__)
 
 def get_book_ids(genre_url, start_page, end_page):
     book_ids = []
+
     for page in range(start_page, end_page + 1):
         page_url = f'{genre_url}/{page}/'
         response = requests.get(page_url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'lxml')
-        for link in soup.find('body').find_all('table', class_='d_book'):
-            book_ids.append(link.find('a')['href'].strip('/b'))
-        # books_selector = 'body table.d_book a'
-        # book_ids_ = soup.select(books_selector)
-        # book_list = [link.strip('/b') for link in book_ids_.find_all('href')]
-        # print(book_list)
 
+        soup = BeautifulSoup(response.text, 'lxml')
+        books_selector = 'body table.d_book tr:nth-child(2) a'
+        for book in soup.select(books_selector):
+            book_ids.append(book['href'].strip('/b'))
     return book_ids
 
 
