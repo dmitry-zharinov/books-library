@@ -21,9 +21,9 @@ def check_for_redirect(response: requests.Response):
         raise requests.exceptions.HTTPError('Книга не найдена')
 
 
-def download_txt(url: str, payload: dict, filename: str, folder: str):
+def download_txt(url: str, payload: dict, filename: str, folder: Path):
     """Функция для скачивания текстовых файлов"""
-    Path(folder).mkdir(parents=True, exist_ok=True)
+    folder.mkdir(parents=True, exist_ok=True)
 
     response = requests.get(url, payload)
     response.raise_for_status()
@@ -36,18 +36,21 @@ def download_txt(url: str, payload: dict, filename: str, folder: str):
     return filepath
 
 
-def download_image(url: str, folder: str):
+def download_image(url: str, folder: Path):
     """Функция для скачивания обложек"""
-    Path(folder).mkdir(parents=True, exist_ok=True)
+    folder.mkdir(parents=True, exist_ok=True)
     filename = urlsplit(url).path.split('/')[-1]
     response = requests.get(url)
     response.raise_for_status()
 
-    with open(Path(folder) / filename, 'wb') as file:
+    with open(folder / filename, 'wb') as file:
         file.write(response.content)
 
 
-def download_book_with_image(book_id: str, skip_imgs: bool, skip_txt: bool):
+def download_book_with_image(book_id: str,
+                             dest_folder: Path,
+                             skip_imgs: bool,
+                             skip_txt: bool):
     """Скачать книгу с обложкой"""
     payload = {
         'id': book_id,
@@ -64,12 +67,12 @@ def download_book_with_image(book_id: str, skip_imgs: bool, skip_txt: bool):
                 'https://tululu.org/txt.php',
                 payload,
                 f'{book_id}. {book_metadata["title"]}',
-                BOOKS_FOLDER)
+                dest_folder / BOOKS_FOLDER)
 
         if not skip_imgs:
             download_image(
                     book_metadata['img_src'],
-                    IMG_FOLDER)
+                    dest_folder / IMG_FOLDER)
 
         return book_metadata
 

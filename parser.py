@@ -59,5 +59,5 @@ def get_book_ids(genre_url: str, start_page: int, end_page: int):
         response = requests.get(page_url)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'lxml')
-        book_ids.append(extract_book_ids(soup))
+        book_ids.extend(extract_book_ids(soup))
     return book_ids
