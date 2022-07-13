@@ -1,6 +1,10 @@
 import argparse
+import logging
 
 from tululu_parser import download_book_with_image
+
+
+logger = logging.getLogger(__file__)
 
 
 def createParser():
@@ -11,14 +15,17 @@ def createParser():
 
 
 def main():
+    logging.basicConfig(level=logging.ERROR)
+    logger.setLevel(logging.DEBUG)
+
     parser = createParser()
     parser_params = parser.parse_args()
 
     for book_id in range(parser_params.start_id, parser_params.end_id+1):
         book_data = download_book_with_image(book_id)
         if book_data:
-            print(f'Заголовок: {book_data["title"]}')
-            print(book_data["genres"])
+            logging.info(f'Заголовок: {book_data["title"]}')
+            logging.info(book_data["genres"])
 
 
 if __name__ == '__main__':

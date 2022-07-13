@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from pathlib import Path
@@ -7,9 +8,9 @@ import requests
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 
+logger = logging.getLogger(__file__)
+
 HOST_NAME = 'https://tululu.org'
-
-
 FOLDER_NAME = 'books'
 IMG_FOLDER_NAME = 'images'
 
@@ -101,7 +102,7 @@ def download_book_with_image(book_id):
         return book_metadata
 
     except requests.exceptions.HTTPError as http_err:
-        print(http_err)
+        logging.error(http_err)
     except requests.ConnectionError as e:
-        print(e)
+        logging.error(e)
         time.sleep(10)
