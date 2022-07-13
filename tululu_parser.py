@@ -15,12 +15,12 @@ FOLDER_NAME = 'books'
 IMG_FOLDER_NAME = 'images'
 
 
-def check_for_redirect(response):
+def check_for_redirect(response: requests.Response):
     if response.history:
         raise requests.exceptions.HTTPError('Книга не найдена')
 
 
-def download_book(url, payload, filename, folder):
+def download_txt(url: str, payload: dict, filename: str, folder: str):
     """Функция для скачивания текстовых файлов"""
     Path(folder).mkdir(parents=True, exist_ok=True)
 
@@ -35,7 +35,7 @@ def download_book(url, payload, filename, folder):
     return filepath
 
 
-def download_image(url, folder):
+def download_image(url: str, folder: str):
     """Функция для скачивания обложек"""
     Path(folder).mkdir(parents=True, exist_ok=True)
     filename = urlsplit(url).path.split('/')[-1]
@@ -46,17 +46,17 @@ def download_image(url, folder):
         file.write(response.content)
 
 
-def extract_comments(soup):
+def extract_comments(soup: BeautifulSoup):
     comments_selector = 'div.texts span.black'
     return [comment.text for comment in soup.select(comments_selector)]
 
 
-def extract_genres(soup):
+def extract_genres(soup: BeautifulSoup):
     genres_selector = 'span.d_book a'
     return [genre.text for genre in soup.select(genres_selector)]
 
 
-def parse_book_page(html_content, book_url):
+def parse_book_page(html_content: str, book_url: str):
     soup = BeautifulSoup(html_content, 'lxml')
 
     book_name_selector = 'td.ow_px_td h1'
@@ -75,11 +75,10 @@ def parse_book_page(html_content, book_url):
         'comments': extract_comments(soup),
         'genres': extract_genres(soup)
     }
-
     return book_info
 
 
-def download_book_with_image(book_id):
+def download_book_with_image(book_id: str, skip_imgs: bool, skip_txt: bool):
     """Скачать книгу с обложкой"""
     payload = {
         'id': book_id,
@@ -91,14 +90,17 @@ def download_book_with_image(book_id):
         check_for_redirect(response)
         book_metadata = parse_book_page(response.text, book_url)
 
-        download_book(
-            'https://tululu.org/txt.php',
-            payload,
-            f'{book_id}. {book_metadata["title"]}',
-            FOLDER_NAME)
-        download_image(
-                book_metadata['img_src'],
-                IMG_FOLDER_NAME)
+        if not skip_txt:
+            download_txt(
+                'https://tululu.org/txt.php',
+                payload,
+                f'{book_id}. {book_metadata["title"]}',
+                FOLDER_NAME)
+
+        if not skip_imgs:
+            download_image(
+                    book_metadata['img_src'],
+                    IMG_FOLDER_NAME)
 
         return book_metadata
 
