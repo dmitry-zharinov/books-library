@@ -1,8 +1,12 @@
 import logging
+from pathlib import Path
+from time import sleep
 from urllib.parse import urljoin
-import requests
 
+import requests
 from bs4 import BeautifulSoup
+
+from download_books import check_for_redirect
 
 logger = logging.getLogger(__file__)
 
@@ -31,15 +35,15 @@ def parse_book_page(html_content: str, book_url: str, books_folder: str):
 
     title, author = book_name
     title = title.strip()
-    book_info = {
+    book_metadata = {
         'title': title,
         'author': author.strip(),
         'img_src': urljoin(book_url, str(img_src)),
-        'book_path': f'{books_folder}/{title}.txt',
+        'book_path': str(Path(books_folder) / f'{title}.txt'),
         'comments': extract_comments(soup),
         'genres': extract_genres(soup)
     }
-    return book_info
+    return book_metadata
 
 
 def extract_book_ids(soup: BeautifulSoup):
@@ -56,8 +60,16 @@ def get_book_ids(genre_url: str, start_page: int, end_page: int):
     book_ids = []
     for page in range(start_page, end_page + 1):
         page_url = f'{genre_url}/{page}/'
-        response = requests.get(page_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'lxml')
-        book_ids.extend(extract_book_ids(soup))
+        try:
+            response = requests.get(page_url)
+            response.raise_for_status()
+            check_for_redirect(response)
+            soup = BeautifulSoup(response.text, 'lxml')
+            book_ids.extend(extract_book_ids(soup))
+        except requests.exceptions.ConnectionError as connect_err:
+            logging.error(connect_err)
+            sleep(10)
+        except requests.exceptions.HTTPError as http_err:
+            logging.error(http_err)
+            continue
     return book_ids
