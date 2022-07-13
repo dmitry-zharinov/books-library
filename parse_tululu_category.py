@@ -65,13 +65,14 @@ def main():
         params.start_page,
         params.end_page)
 
-    downloaded_books = [
-        download_book_with_image(
+    downloaded_books = []
+    for book_id in book_ids:
+        book_metadata = download_book_with_image(
             book_id=book_id,
             dest_folder=params.dest_folder,
             skip_imgs=params.skip_imgs,
             skip_txt=params.skip_txt)
-        for book_id in book_ids]
+        downloaded_books.append(book_metadata)
 
     json_path = params.json_path / "books.json"
     with open(json_path, "w", encoding="utf-8") as books_serialized:
