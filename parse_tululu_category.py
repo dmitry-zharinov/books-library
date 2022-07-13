@@ -13,7 +13,7 @@ def createParser():
     """Создание парсера аргументов"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_page', type=int, default=1)
-    parser.add_argument('--end_page', type=int, default=2)
+    parser.add_argument('--end_page', type=int, default=10)
     parser.add_argument('--dest_folder', type=Path, default=Path.cwd())
     parser.add_argument('--skip_imgs', action='store_true')
     parser.add_argument('--skip_txt', action='store_true')

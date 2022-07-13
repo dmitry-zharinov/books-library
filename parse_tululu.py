@@ -11,7 +11,7 @@ def createParser():
     """Создание парсера аргументов"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--start_id', type=int, default=1)
-    parser.add_argument('--end_id', type=int, default=11)
+    parser.add_argument('--end_id', type=int, default=10)
     return parser
 
 
