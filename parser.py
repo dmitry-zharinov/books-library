@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import urljoin
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -39,3 +40,24 @@ def parse_book_page(html_content: str, book_url: str, books_folder: str):
         'genres': extract_genres(soup)
     }
     return book_info
+
+
+def extract_book_ids(soup: BeautifulSoup):
+    """Извлечь id книг на странице"""
+    book_ids = []
+    books_selector = 'body table.d_book tr:nth-child(2) a'
+    for book in soup.select(books_selector):
+        book_ids.append(book['href'].strip('/b'))
+    return book_ids
+
+
+def get_book_ids(genre_url: str, start_page: int, end_page: int):
+    """Получить id книг по заданным страницам"""
+    book_ids = []
+    for page in range(start_page, end_page + 1):
+        page_url = f'{genre_url}/{page}/'
+        response = requests.get(page_url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        book_ids.append(extract_book_ids(soup))
+    return book_ids
