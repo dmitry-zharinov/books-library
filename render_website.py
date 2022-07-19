@@ -1,11 +1,15 @@
 import json
+import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-from more_itertools import chunked
+from pathlib import Path
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
+from more_itertools import chunked
 
 BOOKS_FOLDER = 'books'
 IMG_FOLDER = 'images'
+PAGES_FOLDER = 'pages'
 
 
 def init_template():
@@ -28,21 +32,25 @@ def run_server():
 
 
 def on_reload():
+    BOOKS_ON_PAGE = 10
     book_items = load_books_from_json()
     template = init_template()
+    chunked_books = list(chunked(book_items, BOOKS_ON_PAGE))
 
-    rendered_page = template.render(
-        books=book_items,
-        books_folder=BOOKS_FOLDER,
-        img_folder=IMG_FOLDER,
-    )
+    for page_num, books in enumerate(chunked_books):
+        rendered_page = template.render(
+            books=books,
+            books_folder=BOOKS_FOLDER,
+            img_folder=IMG_FOLDER,
+        )
+        index_filepath = os.path.join(PAGES_FOLDER, f'index{page_num}.html')
 
-    with open('index.html', 'w', encoding="utf8") as file:
-        file.write(rendered_page)
+        with open(index_filepath, 'w', encoding="utf8") as file:
+            file.write(rendered_page)
 
 
 def main():
-    # run_server()
+    Path(PAGES_FOLDER).mkdir(parents=True, exist_ok=True)
     server = Server()
     on_reload()
     server.watch('templates/*.html', on_reload)
