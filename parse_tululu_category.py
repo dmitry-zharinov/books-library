@@ -72,7 +72,8 @@ def main():
             dest_folder=params.dest_folder,
             skip_imgs=params.skip_imgs,
             skip_txt=params.skip_txt)
-        downloaded_books.append(book_metadata)
+        if book_metadata:
+            downloaded_books.append(book_metadata)
 
     json_path = params.json_path / "books.json"
     with open(json_path, "w", encoding="utf-8") as books_serialized:

@@ -1,14 +1,18 @@
 import logging
 from pathlib import Path
 from time import sleep
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import requests
 from bs4 import BeautifulSoup
 
-from download_books import check_for_redirect
 
 logger = logging.getLogger(__file__)
+
+
+def check_for_redirect(response: requests.Response):
+    if response.history:
+        raise requests.exceptions.HTTPError('Книга не найдена')
 
 
 def extract_comments(soup: BeautifulSoup):
@@ -23,7 +27,7 @@ def extract_genres(soup: BeautifulSoup):
     return [genre.text for genre in soup.select(genres_selector)]
 
 
-def parse_book_page(html_content: str, book_url: str, books_folder: str):
+def parse_book_page(html_content: str, book_url: str):
     """Парсинг страницы книги"""
     soup = BeautifulSoup(html_content, 'lxml')
 
@@ -39,7 +43,8 @@ def parse_book_page(html_content: str, book_url: str, books_folder: str):
         'title': title,
         'author': author.strip(),
         'img_src': urljoin(book_url, str(img_src)),
-        'book_path': str(Path(books_folder) / f'{title}.txt'),
+        'img_filename': str(urlsplit(img_src).path.split('/')[-1]),
+        'book_filename': f'{title}.txt',
         'comments': extract_comments(soup),
         'genres': extract_genres(soup)
     }

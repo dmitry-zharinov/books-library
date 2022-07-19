@@ -60,13 +60,13 @@ def download_book_with_image(book_id: str,
         response = requests.get(book_url)
         response.raise_for_status()
         check_for_redirect(response)
-        book_metadata = parse_book_page(response.text, book_url, BOOKS_FOLDER)
+        book_metadata = parse_book_page(response.text, book_url)
 
         if not skip_txt:
             download_txt(
                 'https://tululu.org/txt.php',
                 payload,
-                f'{book_id}. {book_metadata["title"]}',
+                f'{book_metadata["title"]}',
                 dest_folder / BOOKS_FOLDER)
 
         if not skip_imgs:

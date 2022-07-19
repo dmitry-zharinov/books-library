@@ -4,6 +4,9 @@ from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 
+BOOKS_FOLDER = 'books'
+IMG_FOLDER = 'images'
+
 
 def init_template():
     env = Environment(
@@ -30,6 +33,8 @@ def on_reload():
 
     rendered_page = template.render(
         books=book_items,
+        books_folder=BOOKS_FOLDER,
+        img_folder=IMG_FOLDER,
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
