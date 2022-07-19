@@ -36,14 +36,17 @@ def on_reload():
     book_items = load_books_from_json()
     template = init_template()
     chunked_books = list(chunked(book_items, BOOKS_ON_PAGE))
+    num_of_pages = len(chunked_books)
 
     for page_num, books in enumerate(chunked_books):
         rendered_page = template.render(
             books=books,
             books_folder=BOOKS_FOLDER,
             img_folder=IMG_FOLDER,
+            num_of_pages=num_of_pages,
+            page_num=page_num+1,
         )
-        index_filepath = os.path.join(PAGES_FOLDER, f'index{page_num}.html')
+        index_filepath = os.path.join(PAGES_FOLDER, f'index{page_num+1}.html')
 
         with open(index_filepath, 'w', encoding="utf8") as file:
             file.write(rendered_page)
