@@ -4,10 +4,13 @@ from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from livereload import Server
 
-env = Environment(
-    loader=FileSystemLoader('.'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
+
+def init_template():
+    env = Environment(
+        loader=FileSystemLoader('templates'),
+        autoescape=select_autoescape(['html'])
+    )
+    return env.get_template('template.html')
 
 
 def load_books_from_json():
@@ -21,12 +24,12 @@ def run_server():
     server.serve_forever()
 
 
-def rebuild():
-    books = load_books_from_json()
-    template = env.get_template('template.html')
+def on_reload():
+    book_items = load_books_from_json()
+    template = init_template()
 
     rendered_page = template.render(
-        books=books,
+        books=book_items,
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
@@ -35,9 +38,9 @@ def rebuild():
 
 def main():
     # run_server()
-    rebuild()
     server = Server()
-    server.watch('template.html', rebuild)
+    on_reload()
+    server.watch('templates/*.html', on_reload)
     server.serve(root='.')
 
 
