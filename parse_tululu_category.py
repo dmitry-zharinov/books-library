@@ -9,6 +9,8 @@ from parser import get_book_ids
 logger = logging.getLogger(__file__)
 
 
+MEDIA_FOLDER = 'media'
+
 def createParser():
     """Создание парсера аргументов"""
     parser = argparse.ArgumentParser(
@@ -31,7 +33,7 @@ def createParser():
         help='Путь к каталогу с результатами парсинга: '
              'картинкам, книгам (по умолчанию - каталог скрипта)',
         type=Path,
-        default=Path.cwd())
+        default=Path.cwd() / MEDIA_FOLDER)
 
     parser.add_argument(
         '--skip_imgs',
@@ -48,7 +50,7 @@ def createParser():
         help='Путь к каталогу с *.json файлом с результатами'
              'работы скрипта (по умолчанию - каталог скрипта)',
         type=Path,
-        default=Path.cwd())
+        default=Path.cwd() / MEDIA_FOLDER)
     return parser
 
 

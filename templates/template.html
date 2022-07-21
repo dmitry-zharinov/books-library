@@ -11,7 +11,7 @@
               <div class="card mb-3" style="max-width: 540px;">
                 <div class="row no-gutters">
                   <div class="col-md-4">
-                    <img src="../{{img_folder}}/{{ book.img_filename }}" class="card-img" alt="{{ book.title }}" style="width: 140px">
+                    <img src="../{{media_folder}}/images/{{ book.img_filename }}" class="card-img" alt="{{ book.title }}" style="width: 140px">
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">
@@ -23,7 +23,7 @@
                         {% endfor %}
                       </p>
                       <p class="card-text">
-                        <a href="../{{ books_folder }}/{{ book.book_filename | urlencode }}" class="btn btn-light btn-lg active" role="button" aria-pressed="true" target="_blank" rel="noopener noreferrer">
+                        <a href="../{{media_folder}}/books/{{ book.book_filename | urlencode }}" class="btn btn-light btn-lg active" role="button" aria-pressed="true" target="_blank" rel="noopener noreferrer">
                           Читать
                         </a>
                       </p>

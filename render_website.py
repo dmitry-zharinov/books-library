@@ -10,7 +10,8 @@ from more_itertools import chunked
 BOOKS_FOLDER = 'books'
 IMG_FOLDER = 'images'
 PAGES_FOLDER = 'pages'
-
+STATIC_URL = '../static'
+MEDIA_FOLDER = 'media'
 
 def init_template():
     env = Environment(
@@ -21,7 +22,7 @@ def init_template():
 
 
 def load_books_from_json():
-    with open("books.json", "r", encoding='utf8') as my_file:
+    with open(Path(MEDIA_FOLDER) / 'books.json', 'r', encoding='utf8') as my_file:
         books_json = my_file.read()
         return list(chunked(json.loads(books_json), 2))
 
@@ -43,8 +44,10 @@ def on_reload():
             books=books,
             books_folder=BOOKS_FOLDER,
             img_folder=IMG_FOLDER,
+            media_folder=MEDIA_FOLDER,
             num_of_pages=num_of_pages,
             page_num=page_num+1,
+            static_url=STATIC_URL
         )
         index_filepath = os.path.join(PAGES_FOLDER, f'index{page_num+1}.html')
 
