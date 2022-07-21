@@ -13,6 +13,7 @@ PAGES_FOLDER = 'pages'
 STATIC_URL = '../static'
 MEDIA_FOLDER = 'media'
 
+
 def init_template():
     env = Environment(
         loader=FileSystemLoader('templates'),
@@ -22,9 +23,10 @@ def init_template():
 
 
 def load_books_from_json():
-    with open(Path(MEDIA_FOLDER) / 'books.json', 'r', encoding='utf8') as my_file:
-        books_json = my_file.read()
-        return list(chunked(json.loads(books_json), 2))
+    books_json_path = Path(MEDIA_FOLDER) / 'books.json'
+    with open(books_json_path, 'r', encoding='utf8') as books_file:
+        book_items = books_file.read()
+        return list(chunked(json.loads(book_items), 2))
 
 
 def run_server():
