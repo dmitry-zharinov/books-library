@@ -1,11 +1,11 @@
 <nav aria-label="Навигация" class="m-3">
-    <ul class="pagination">
+    <ul class="pagination justify-content-center">
         <li class="page-item {% if page_num == 1 %}disabled{% endif %}">
             <a class="page-link" href="index{{page_num - 1}}.html">Предыдущая</a>
         </li>
         {% for i in range(1, num_of_pages + 1) %}
             {% if i == page_num %}
-            <li class="page-item active" aria-current="page">
+            <li class="page-item active"  aria-current="page">
                 <span class="page-link">
                     {{i}}</span>
                 <span class="sr-only">(current)</span>
