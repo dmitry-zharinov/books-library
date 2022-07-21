@@ -34,7 +34,7 @@ $ parse_tululu_category.py --start_page START_PAGE --end_page END_PAGE
 В папке `pages` будут созданы страницы библиотеки. Открыв любую из страниц, вы сможете перемещаться по библиотеке и читать книги.
 
 ## Пример работы сайта
-[Ссылка на страницу библиотеки](https://dmitry-zharinov.github.io/books-library-parser/pages/index1.html)
+[Ссылка на страницу библиотеки](https://dmitry-zharinov.github.io/books-library/pages/index1.html)
 ![пример](https://user-images.githubusercontent.com/16899464/180163077-9d3d7b6a-3fb9-4b5d-b6fd-1b50889fccb8.png)
 
 ## Цели проекта
