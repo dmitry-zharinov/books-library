@@ -12,6 +12,7 @@ IMG_FOLDER = 'images'
 PAGES_FOLDER = 'pages'
 STATIC_URL = '../static'
 MEDIA_FOLDER = 'media'
+BOOKS_ON_PAGE = 10
 
 
 def init_template():
@@ -35,7 +36,6 @@ def run_server():
 
 
 def on_reload():
-    BOOKS_ON_PAGE = 10
     book_items = load_books_from_json()
     template = init_template()
     chunked_books = list(chunked(book_items, BOOKS_ON_PAGE))
