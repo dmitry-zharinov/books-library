@@ -26,8 +26,7 @@ def init_template():
 def load_books_from_json():
     books_json_path = Path(MEDIA_FOLDER) / 'books.json'
     with open(books_json_path, 'r', encoding='utf8') as books_file:
-        book_items = books_file.read()
-        return list(chunked(json.loads(book_items), 2))
+        return chunked(json.load(books_file), 2)
 
 
 def run_server():
